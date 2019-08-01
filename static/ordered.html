@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ordered</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    {{template "nav"}}
+    <label>查询点餐情况（次日就餐）</label>
+    <el-date-picker
+            v-model="date"
+            align="right"
+            type="date"
+            placeholder="选择点餐日期"
+            value-format="yyyyMMdd"
+            :picker-options="pickerOptions">
+    </el-date-picker>
+    <a :href="'ordered?date=' + date">
+        <button>查询</button>
+    </a>
+    <span>{{.Msg}}</span>
+    <span>{{.ErrorCode}}</span>
+    <table>
+        <tbody>
+        {{with .Data}}
+            {{range .}}
+                <tr>
+                    <td>{{.Id}}</td>
+                    <td>{{.Name}}</td>
+                    <td>{{.OrderType}}</td>
+                    <td>{{.Time}}</td>
+                    <td>{{.V}}</td>
+                </tr>
+            {{end}}
+        {{end}}
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data() {
+            return {
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    },
+                    shortcuts: [
+                        {
+                            text: '昨天',
+                            onClick(picker) {
+                                const date = new Date();
+                                date.setTime(date.getTime() - 3600 * 1000 * 24);
+                                picker.$emit('pick', date);
+                            }
+                        },
+                        {
+                            text: '今天',
+                            onClick(picker) {
+                                picker.$emit('pick', new Date());
+                            }
+                        }, {
+                            text: '明天',
+                            onClick(picker) {
+                                const date = new Date();
+                                date.setTime(date.getTime() + 3600 * 1000 * 24);
+                                picker.$emit('pick', date);
+                            }
+                        }]
+                },
+                date: '',
+            }
+        },
+        method: {},
+        mounted() {
+        }
+    })
+</script>
+</html>

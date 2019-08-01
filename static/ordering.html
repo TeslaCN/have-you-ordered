@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ordering</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    {{template "nav"}}
+    <div>
+        {{.message}}
+    </div>
+    <div>
+        <p>不受 14:00 ~ 18:00 的点餐时间限制，可以提前点以后的餐（如果没有换新的订餐系统🌚）</p>
+        <p>18:00 前忘了点次日的餐也没关系，在这里可以强行插入点餐记录，不过，前提是负责统计点餐人的大佬还没导出用餐人列表🌚</p>
+    </div>
+    <form action="/order" method="post" onsubmit="return confirm('真的要点吗');">
+        <div>
+            <label>点餐人</label>
+            <input name="name" value="" required>
+        </div>
+        <div>
+            <label>点餐类型</label><br>
+            <input name="orderType" value="套餐饭" type="radio">套餐饭（周一至周五）<br>
+            <input name="orderType" value="中餐" type="radio">中餐（周末）<br>
+            <input name="orderType" value="晚餐" type="radio">晚餐（周末）<br>
+            <input name="orderType" value="中餐和晚餐" type="radio">中餐和晚餐（周末）<br>
+            港真周末点的外卖很容易不合口味、份量小🌚
+        </div>
+        <div>
+            <label>点餐时间（就餐日期是点餐时间的次日）</label>
+            <div class="block">
+                <el-date-picker
+                        v-model="millis"
+                        type="datetime"
+                        placeholder="选择日期时间"
+                        align="right"
+                        :picker-options="pickerOptions"
+                        value-format="timestamp"
+                        default-time="14:00:00"
+                >
+                </el-date-picker>
+            </div>
+            <label>时间戳（自动计算）</label>
+            <input name="time" :value="millis" readonly>
+            <input name="YYMMdd" :value="date" readonly>
+            <input name="isAM" value="1" hidden>
+        </div>
+        <div>
+            <label>建议或问题？</label>
+            <textarea name="suggestContent" value=""></textarea>
+        </div>
+        <div>
+            <input type="submit">
+            <input type="reset">
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data() {
+            return {
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: '明天',
+                        onclick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() + 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    }]
+                },
+                millis: 0,
+            }
+        },
+        computed: {
+            date() {
+                let date = new Date(this.millis);
+                return this.formatDate(date);
+            }
+        },
+        methods: {
+            formatDate(date) {
+                return '' + date.getFullYear() + ('0' + (date.getMonth() + 1)).slice(-2) + ('0' + date.getDate()).slice(-2);
+            }
+        },
+        mounted() {
+            let now = new Date();
+            now.setHours(14);
+            now.setMinutes(0);
+            now.setSeconds(0);
+            now.setMilliseconds(0);
+            this.millis = now.getTime();
+        }
+    })
+</script>
+</html>
