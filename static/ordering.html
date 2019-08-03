@@ -66,6 +66,9 @@
         data() {
             return {
                 pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() < new Date(new Date().getTime() - 3600 * 24 * 1000 * 2);
+                    },
                     shortcuts: [{
                         text: '今天',
                         onClick(picker) {
