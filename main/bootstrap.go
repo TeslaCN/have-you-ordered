@@ -121,6 +121,7 @@ func PostOrdered(date string) OrderList {
 func PostOrdering(form *OrderingForm) string {
 	bytes, _ := json.Marshal(form)
 	postBody := string(bytes)
+	fmt.Println(postBody)
 	response, err := http.Post("http://www.rainholer.com:81/orderDish/detailInfo/save", "application/json", strings.NewReader(postBody))
 	if err != nil {
 		fmt.Println(err)
