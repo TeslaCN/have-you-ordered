@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -10,6 +11,8 @@ import (
 	"strings"
 	"time"
 )
+
+var server = flag.String("server", ":23333", "[IP]:port")
 
 type OrderedForm struct {
 	StartTime string `json:"startTime"`
@@ -83,7 +86,7 @@ func main() {
 			"message": result,
 		})
 	})
-	_ = r.Run()
+	_ = r.Run(*server)
 }
 
 func OrderedView(context *gin.Context) {
