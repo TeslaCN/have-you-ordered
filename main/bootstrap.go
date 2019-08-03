@@ -55,6 +55,7 @@ type OrderingForm struct {
 }
 
 func main() {
+	flag.Parse()
 	fmt.Println(os.Args)
 	r := gin.Default()
 	r.LoadHTMLGlob("static/**")
