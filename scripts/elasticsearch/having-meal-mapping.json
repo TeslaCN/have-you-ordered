@@ -1,0 +1,68 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "pinyin_analyzer": {
+          "tokenizer": "custom_pinyin"
+        }
+      },
+      "tokenizer": {
+        "custom_pinyin": {
+          "type": "pinyin",
+          "keep_separate_first_letter": false,
+          "keep_full_pinyin": true,
+          "keep_original": true,
+          "limit_first_letter_length": 16,
+          "lowercase": true,
+          "remove_duplicated_term": true
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "personName": {
+        "type": "keyword",
+        "fields": {
+          "pinyin": {
+            "type": "text",
+            "analyzer": "pinyin_analyzer"
+          },
+          "text": {
+            "type": "text",
+            "analyzer": "ik_max_word"
+          }
+        }
+      },
+      "orderType": {
+        "type": "keyword"
+      },
+      "yymmdd": {
+        "type": "keyword"
+      },
+      "time": {
+        "type": "date",
+        "format": "epoch_second"
+      },
+      "suggestContent": {
+        "type": "text",
+        "analyzer": "ik_max_word",
+        "fields": {
+          "pinyin": {
+            "type": "text",
+            "analyzer": "pinyin_analyzer"
+          }
+        }
+      },
+      "isAm": {
+        "type": "boolean"
+      },
+      "v": {
+        "type": "long"
+      }
+    }
+  }
+}
