@@ -19,3 +19,26 @@ func TestTimeType(t *testing.T) {
 	t0 = time.Now()
 	fmt.Println(t0.UnixNano())
 }
+
+func TestTimerChan(t *testing.T) {
+	timer := time.NewTimer(5 * time.Second)
+	fmt.Println("Timer started")
+	<-timer.C
+	fmt.Println(t)
+}
+
+func TestTicker(t *testing.T) {
+	ticker := time.NewTicker(250 * time.Millisecond)
+	timer := time.NewTimer(time.Second * 5)
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Println("tick")
+		case <-timer.C:
+			fmt.Println("done")
+			goto out
+		}
+	}
+out:
+	fmt.Println("Exit")
+}

@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func StartFetchingMealRecord(since string, until string) {
+func StartFetchingMealRecord(since string, until string) int {
 
 	var dates []string
 	layout := "20060102"
@@ -32,7 +32,8 @@ func StartFetchingMealRecord(since string, until string) {
 		log.Printf("Fetching: %s", date)
 		totalSize += IndexBulk(orders)
 	}
-	log.Printf("Total Bulk: %d\n", totalSize)
+	//log.Printf("Total Bulk: %d\n", totalSize)
+	return totalSize
 }
 
 func Fetch(date string) []*Ordered {
@@ -86,7 +87,7 @@ func IndexBulk(ordereds []*Ordered) int {
 		buf.Write(meta)
 		buf.Write(dataBytes)
 	}
-	response, e := elasticsearch.Es.Bulk(bytes.NewReader(buf.Bytes()), elasticsearch.Es.Bulk.WithIndex("having-meal"))
+	response, e := elasticsearch.Client.Bulk(bytes.NewReader(buf.Bytes()), elasticsearch.Client.Bulk.WithIndex("having-meal"))
 	if e != nil {
 		log.Println(e)
 	}
@@ -109,7 +110,7 @@ func IndexOrdered(ordered *Ordered) {
 		Body:       strings.NewReader(string(bytes)),
 		Refresh:    "true",
 	}
-	res, err := request.Do(context.Background(), elasticsearch.Es)
+	res, err := request.Do(context.Background(), elasticsearch.Client)
 	defer res.Body.Close()
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)

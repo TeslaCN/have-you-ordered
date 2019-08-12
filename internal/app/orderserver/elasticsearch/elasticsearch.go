@@ -3,12 +3,13 @@ package elasticsearch
 import (
 	"encoding/json"
 	"github.com/elastic/go-elasticsearch/v7"
+	"have-you-ordered/cmd/orderserver/app/config"
 	"log"
 )
 
-var Es *elasticsearch.Client
+var Client *elasticsearch.Client
 
-const IndexName = "having-meal"
+var IndexName = config.Config.Index
 
 type EsBaseResponseBody struct {
 	Took     int  `json:"took"`
@@ -19,26 +20,18 @@ type EsBaseResponseBody struct {
 		Skipped    int `json:"skipped"`
 		Failed     int `json:"failed"`
 	} `json:"_shards"`
-	//Hits struct {
-	//	Total struct {
-	//		Value    uint64 `json:"value"`
-	//		Relation string `json:"relation"`
-	//	}
-	//	MaxScore uint64     `json:"max_score"`
-	//	Hits     []struct{} `json:"hits"`
-	//} `json:"hits"`
-	//Aggregations interface{} `json:"aggregations"`
 }
 
 func init() {
-	// TODO 抽取到配置项
-	config := elasticsearch.Config{
-		Addresses: []string{"http://es.0:49204"},
+	cfg := elasticsearch.Config{
+		Addresses: config.Config.Elasticsearch.Hosts,
+		Username:  config.Config.Elasticsearch.Username,
+		Password:  config.Config.Elasticsearch.Password,
 	}
-	Es, _ = elasticsearch.NewClient(config)
+	Client, _ = elasticsearch.NewClient(cfg)
 
 	var r map[string]interface{}
-	res, err := Es.Info()
+	res, err := Client.Info()
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)
 	}

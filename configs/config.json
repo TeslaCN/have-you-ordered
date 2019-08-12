@@ -1,0 +1,11 @@
+{
+  "elasticsearch": {
+    "hosts": [
+      "http://es.0:49204"
+    ],
+    "username": "",
+    "password": ""
+  },
+  "server": ":60001",
+  "index": "having-meal"
+}
