@@ -1,7 +1,7 @@
 {
   "elasticsearch": {
     "hosts": [
-      "http://es.0:49204"
+      "http://deploy.scau.ltd:49204"
     ],
     "username": "",
     "password": ""
