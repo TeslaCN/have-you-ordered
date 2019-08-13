@@ -12,8 +12,9 @@ type configuration struct {
 		Username string   `json:"username"`
 		Password string   `json:"password"`
 	} `json:"elasticsearch"`
-	Server string `json:"server"`
-	Index  string `json:"index"`
+	Server        string `json:"server"`
+	Index         string `json:"index"`
+	FetchInterval string `json:"fetch_interval"`
 }
 
 var Config = &configuration{}

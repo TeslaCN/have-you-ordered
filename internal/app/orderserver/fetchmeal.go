@@ -131,3 +131,24 @@ func IndexOrdered(ordered *Ordered) {
 		}
 	}
 }
+
+func FetchInterval(duration time.Duration) {
+	log.Printf("Start Fetch Interval: %d sec", duration/time.Second)
+	ticker := time.NewTicker(duration)
+	f := func() {
+		defer func() {
+			if e := recover(); e != nil {
+				log.Printf("Fetch interval error: %s", e)
+			}
+		}()
+		now := time.Now()
+		log.Printf("%d", IndexBulk(Fetch(now.Format("20060102"))))
+	}
+	f()
+	for {
+		select {
+		case <-ticker.C:
+			f()
+		}
+	}
+}
