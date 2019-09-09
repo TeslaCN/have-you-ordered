@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"flag"
 	"log"
 	"os"
 )
@@ -17,11 +18,16 @@ type configuration struct {
 	FetchInterval string `json:"fetch_interval"`
 }
 
-var Config = &configuration{}
+var (
+	Config     = &configuration{}
+	configPath = flag.String("config", "configs/config.json", "[-config path/to/config.json]")
+)
 
 func init() {
-	file, e := os.Open("configs/config.json")
+	flag.Parse()
+	file, e := os.Open(*configPath)
 	if e != nil {
+		log.Fatalln("Config file not found: " + *configPath)
 	}
 	defer file.Close()
 	decoder := json.NewDecoder(file)
