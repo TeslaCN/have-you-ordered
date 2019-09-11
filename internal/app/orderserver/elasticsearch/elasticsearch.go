@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-var Client *elasticsearch.Client
+var c *elasticsearch.Client
 
 var IndexName = config.Config.Index
 
@@ -22,27 +22,44 @@ type EsBaseResponseBody struct {
 	} `json:"_shards"`
 }
 
-func init() {
+func connect() (*elasticsearch.Client, error) {
+	var client *elasticsearch.Client
 	cfg := elasticsearch.Config{
 		Addresses: config.Config.Elasticsearch.Hosts,
 		Username:  config.Config.Elasticsearch.Username,
 		Password:  config.Config.Elasticsearch.Password,
 	}
-	Client, _ = elasticsearch.NewClient(cfg)
+	client, err := elasticsearch.NewClient(cfg)
+	if err != nil {
+		return nil, err
+	}
 
 	var r map[string]interface{}
-	res, err := Client.Info()
+	res, err := client.Info()
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Printf("Error getting response: %s", err)
 	}
 	// Check response status
 	if res.IsError() {
-		log.Fatalf("Error: %s", res.String())
+		//log.Fatalf("Error: %s", res.String())
 	}
 	// Deserialize the response into a map.
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
+		//log.Fatalf("Error parsing the response body: %s", err)
 	}
 	log.Printf("Client: %s", elasticsearch.Version)
 	log.Printf("Server: %s", r["version"].(map[string]interface{})["number"])
+	return client, nil
+}
+
+func Client() *elasticsearch.Client {
+	if c == nil {
+		newClient, err := connect()
+		if err != nil {
+			log.Printf("")
+			return c
+		}
+		c = newClient
+	}
+	return c
 }

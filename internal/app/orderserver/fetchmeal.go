@@ -87,7 +87,7 @@ func IndexBulk(ordereds []*Ordered) int {
 		buf.Write(meta)
 		buf.Write(dataBytes)
 	}
-	response, e := elasticsearch.Client.Bulk(bytes.NewReader(buf.Bytes()), elasticsearch.Client.Bulk.WithIndex("having-meal"))
+	response, e := elasticsearch.Client().Bulk(bytes.NewReader(buf.Bytes()), elasticsearch.Client().Bulk.WithIndex("having-meal"))
 	if e != nil {
 		log.Println(e)
 	}
@@ -110,7 +110,7 @@ func IndexOrdered(ordered *Ordered) {
 		Body:       strings.NewReader(string(bytes)),
 		Refresh:    "true",
 	}
-	res, err := request.Do(context.Background(), elasticsearch.Client)
+	res, err := request.Do(context.Background(), elasticsearch.Client())
 	defer res.Body.Close()
 	if err != nil {
 		log.Fatalf("Error getting response: %s", err)

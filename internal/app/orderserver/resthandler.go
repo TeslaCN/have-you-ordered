@@ -43,7 +43,7 @@ func AggHistogram(c *gin.Context) {
 		  }
 		}
 		`
-	es := elasticsearch.Client
+	es := elasticsearch.Client()
 	response, e := es.Search(
 		es.Search.WithContext(context.Background()),
 		es.Search.WithBody(strings.NewReader(query)),

@@ -1,0 +1,36 @@
+version: "3"
+services:
+
+  es:
+    image: elasticsearch:7.1.1
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "49204"
+    networks:
+      - webnet
+    environment:
+      - "discovery.type=single-node"
+      - "http.port=49204"
+
+  web:
+    image: teslacn/orderserver:0.0.5
+    depends_on:
+      - es
+    deploy:
+      restart_policy:
+        condition: on-failure
+    links:
+      - es:es.0
+    ports:
+      - "61111:60001"
+    #    volumes:
+    #      - c:/docker/have-you-ordered/configs-compose:/mounted/configs
+    #    environment:
+    #      PARAMS: "-config='/mounted/configs/config.json'"
+    networks:
+      - webnet
+
+networks:
+  webnet:
