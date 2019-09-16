@@ -26,6 +26,3 @@ jobs:
 
     - name: Build
       run: go build -v -o orderserver ./cmd/orderserver/orderserver.go
-
-    - name: Run
-      run: ./orderserver
