@@ -20,6 +20,7 @@ func Run() {
 
 	r.GET("/api", orderserver.ApiHelloGo)
 	r.GET("/api/ordered/:date", orderserver.ApiOrdered)
+	r.GET("/api/order-types", orderserver.ApiOrderTypes)
 	r.POST("/api/order", orderserver.PostOrder)
 	r.POST("/api/fake-order", func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{

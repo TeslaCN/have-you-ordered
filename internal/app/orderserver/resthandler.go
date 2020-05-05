@@ -27,6 +27,10 @@ func ApiOrdered(context *gin.Context) {
 	context.JSON(http.StatusOK, *orderList)
 }
 
+func ApiOrderTypes(context *gin.Context) {
+	context.JSON(http.StatusOK, *PostAllOrderTypes())
+}
+
 func AggHistogram(c *gin.Context) {
 
 	//language=JSON
