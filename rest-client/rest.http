@@ -1,1 +1,15 @@
 GET {{base}}/api/order-types
+
+###
+
+GET {{base}}/api/dashboard/agg-by-day
+
+###
+
+GET {{base}}/api/dashboard/agg-order-type
+
+###
+
+GET {{base}}/api/dashboard/agg-order-person
+
+###

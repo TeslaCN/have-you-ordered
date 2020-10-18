@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"have-you-ordered/cmd/orderserver/app/dto"
 	"have-you-ordered/internal/app/orderserver/elasticsearch"
 	"io/ioutil"
 	"net/http"
@@ -32,7 +33,6 @@ func ApiOrderTypes(context *gin.Context) {
 }
 
 func AggHistogram(c *gin.Context) {
-
 	//language=JSON
 	query := `{
 		  "size": 0,
@@ -70,19 +70,113 @@ func AggHistogram(c *gin.Context) {
 		} `json:"aggregations"`
 	}{}
 	_ = json.Unmarshal(s, agg)
-	type Dto struct {
-		Key   string `json:"key"`
-		Value uint64 `json:"value"`
-	}
-	var dtos []*Dto
+	var results []*dto.KeyValuePairDto
 	buckets := agg.Aggregations.NAME.Buckets
 	for _, bucket := range buckets {
-		dtos = append(dtos, &Dto{
+		results = append(results, &dto.KeyValuePairDto{
 			Key:   bucket.KeyAsString,
 			Value: bucket.DocCount,
 		})
 	}
-	c.JSON(http.StatusOK, dtos)
+	c.JSON(http.StatusOK, results)
+}
+
+func AggOrderType(c *gin.Context) {
+	//language=JSON
+	query := `{
+  "size": 0,
+  "aggs": {
+    "NAME": {
+      "terms": {
+        "field": "orderType",
+        "size": 1000
+      }
+    }
+  }
+}`
+	es := elasticsearch.Client()
+	response, e := es.Search(
+		es.Search.WithContext(context.Background()),
+		es.Search.WithBody(strings.NewReader(query)),
+		es.Search.WithIndex("having-meal"),
+	)
+	if e != nil || response.IsError() {
+	}
+	s, _ := ioutil.ReadAll(response.Body)
+	agg := &struct {
+		elasticsearch.EsBaseResponseBody
+		Aggregations struct {
+			NAME struct {
+				Buckets []struct {
+					Key      string `json:"key"`
+					DocCount uint64 `json:"doc_count"`
+				} `json:"buckets"`
+			}
+		} `json:"aggregations"`
+	}{}
+	_ = json.Unmarshal(s, agg)
+	var results []*dto.KeyValuePairDto
+	buckets := agg.Aggregations.NAME.Buckets
+	for _, bucket := range buckets {
+		results = append(results, &dto.KeyValuePairDto{
+			Key:   bucket.Key,
+			Value: bucket.DocCount,
+		})
+	}
+	c.JSON(http.StatusOK, results)
+}
+
+func AggOrderPerson(c *gin.Context) {
+	//language=JSON
+	query := `{
+  "size": 0,
+  "aggs": {
+    "NAME": {
+      "terms": {
+        "field": "personName",
+        "size": 1000
+      }
+    }
+  }
+}`
+	es := elasticsearch.Client()
+	response, e := es.Search(
+		es.Search.WithContext(context.Background()),
+		es.Search.WithBody(strings.NewReader(query)),
+		es.Search.WithIndex("having-meal"),
+	)
+	if e != nil || response.IsError() {
+	}
+	s, _ := ioutil.ReadAll(response.Body)
+	agg := &struct {
+		elasticsearch.EsBaseResponseBody
+		Aggregations struct {
+			NAME struct {
+				Buckets []struct {
+					Key      string `json:"key"`
+					DocCount uint64 `json:"doc_count"`
+				} `json:"buckets"`
+			}
+		} `json:"aggregations"`
+	}{}
+	_ = json.Unmarshal(s, agg)
+	var results []*dto.KeyValuePairDto
+	buckets := agg.Aggregations.NAME.Buckets
+	for _, bucket := range buckets {
+		results = append(results, &dto.KeyValuePairDto{
+			Key:   coverPersonName(bucket.Key),
+			Value: bucket.DocCount,
+		})
+	}
+	c.JSON(http.StatusOK, results)
+}
+
+func coverPersonName(name string) string {
+	chars := []rune(name)
+	if 0 < len(chars) {
+		return string(chars[0]) + strings.Repeat("*", len(chars)-1)
+	}
+	return name
 }
 
 func PostOrder(context *gin.Context) {

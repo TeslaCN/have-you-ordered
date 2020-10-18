@@ -28,6 +28,8 @@ func Run() {
 		})
 	})
 	r.GET("/api/dashboard/agg-by-day", orderserver.AggHistogram)
+	r.GET("/api/dashboard/agg-order-type", orderserver.AggOrderType)
+	r.GET("/api/dashboard/agg-order-person", orderserver.AggOrderPerson)
 
 	r.POST("/api/control/fetch", orderserver.ManuallyFetch)
 
