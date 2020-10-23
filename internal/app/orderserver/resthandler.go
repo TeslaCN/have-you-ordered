@@ -35,18 +35,31 @@ func ApiOrderTypes(context *gin.Context) {
 func AggHistogram(c *gin.Context) {
 	//language=JSON
 	query := `{
-		  "size": 0,
-		  "aggs": {
-		    "NAME": {
-		      "date_histogram": {
-		        "field": "time",
-		        "interval": "1D",
-		        "format": "yyyy-MM-dd"
-		      }
-		    }
-		  }
-		}
-		`
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "range": {
+            "time": {
+              "lte": "now+5y",
+              "gte": "now-5y"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "aggs": {
+    "NAME": {
+      "date_histogram": {
+        "field": "time",
+        "fixed_interval": "1D",
+        "format": "yyyy-MM-dd"
+      }
+    }
+  }
+}`
 	es := elasticsearch.Client()
 	response, e := es.Search(
 		es.Search.WithContext(context.Background()),
